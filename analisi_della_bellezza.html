@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SCOPRI SE SEI BELLA</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Plus Jakarta Sans', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#fdf2f8',
+                            100: '#fce7f3',
+                            500: '#ec4899',
+                            600: '#db2777',
+                            700: '#be185d',
+                            900: '#831843',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #31102f 100%);
+            min-height: 100vh;
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+        }
+
+        .scan-line {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, transparent, #ec4899, #3b82f6, transparent);
+            box-shadow: 0 0 15px #ec4899;
+            animation: scan 2s linear infinite;
+        }
+
+        @keyframes scan {
+            0% { top: 0%; opacity: 0; }
+            15% { opacity: 1; }
+            85% { opacity: 1; }
+            100% { top: 100%; opacity: 0; }
+        }
+
+        .pulse-glow {
+            animation: pulse-glow 2s infinite ease-in-out;
+        }
+
+        @keyframes pulse-glow {
+            0%, 100% { box-shadow: 0 0 15px rgba(236, 72, 153, 0.3); }
+            50% { box-shadow: 0 0 30px rgba(236, 72, 153, 0.7); }
+        }
+
+        .face-mesh-overlay {
+            background-image: radial-gradient(rgba(236, 72, 153, 0.3) 1px, transparent 0);
+            background-size: 16px 16px;
+        }
+    </style>
+</head>
+<body class="font-sans text-slate-100 flex items-center justify-center p-4 sm:p-6 min-h-screen">
+
+    <div class="w-full max-w-xl mx-auto">
+        
+        <!-- App Header -->
+        <div class="text-center mb-8">
+            <div class="inline-flex items-center justify-center p-3 bg-pink-500/10 rounded-2xl mb-4 border border-pink-500/20 text-pink-400">
+                <i class="fa-solid fa-wand-magic-sparkles text-2xl"></i>
+            </div>
+            <h1 class="text-3xl sm:text-4xl font-extrabold tracking-tight bg-gradient-to-r from-pink-400 via-purple-300 to-indigo-400 bg-clip-text text-transparent">
+                SCOPRI SE SEI BELLA
+            </h1>
+            <p class="text-slate-400 text-sm sm:text-base mt-2 font-light">
+                Analisi facciale avanzata basata sulla Sezione Aurea e IA Fittizia
+            </p>
+        </div>
+
+        <!-- Main Card -->
+        <div class="glass-card rounded-3xl p-6 sm:p-8 transition-all duration-300">
+
+            <!-- STATE 1: UPLOAD AREA -->
+            <div id="uploadState" class="block">
+                <div 
+                    id="dropZone" 
+                    class="border-2 border-dashed border-slate-600 hover:border-pink-500/80 rounded-2xl p-8 text-center cursor-pointer transition-all duration-300 bg-slate-900/40 hover:bg-slate-900/60 group"
+                >
+                    <input type="file" id="fileInput" accept="image/png, image/jpeg" class="hidden">
+                    
+                    <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-slate-800 flex items-center justify-center text-slate-400 group-hover:scale-110 group-hover:bg-pink-500/20 group-hover:text-pink-400 transition-all duration-300">
+                        <i class="fa-solid fa-cloud-arrow-up text-2xl"></i>
+                    </div>
+                    
+                    <h3 class="text-lg font-semibold text-slate-200 mb-1">
+                        Carica la tua foto
+                    </h3>
+                    <p class="text-xs text-slate-400 mb-4">
+                        Trascina qui l'immagine o <span class="text-pink-400 underline underline-offset-2">sfoglia</span>
+                    </p>
+                    
+                    <div class="inline-flex items-center gap-2 text-[11px] text-slate-500 bg-slate-800/60 px-3 py-1.5 rounded-full border border-slate-700/50">
+                        <i class="fa-solid fa-image"></i> Formati supportati: PNG, JPG
+                    </div>
+                </div>
+            </div>
+
+            <!-- STATE 2: PREVIEW & CONFIRM -->
+            <div id="previewState" class="hidden text-center">
+                <div class="relative w-48 h-48 mx-auto mb-6 rounded-2xl overflow-hidden border-2 border-pink-500/40 shadow-xl group">
+                    <img id="previewImg" src="" alt="Anteprima" class="w-full h-full object-cover">
+                    <button id="changeImgBtn" class="absolute inset-0 bg-slate-950/70 text-white opacity-0 group-hover:opacity-100 flex flex-col items-center justify-center transition-opacity duration-200 gap-1 text-xs">
+                        <i class="fa-solid fa-rotate text-lg"></i>
+                        Cambia Foto
+                    </button>
+                </div>
+
+                <p class="text-xs text-slate-400 mb-6">Inquadratura rilevata correttamente. Pronto per l'analisi bio-estetica.</p>
+
+                <button 
+                    id="analyzeBtn" 
+                    class="w-full py-4 px-6 bg-gradient-to-r from-pink-600 via-rose-600 to-purple-600 hover:from-pink-500 hover:to-purple-500 text-white font-bold rounded-2xl shadow-lg pulse-glow transition-all duration-300 transform active:scale-95 flex items-center justify-center gap-2"
+                >
+                    <i class="fa-solid fa-microscope text-lg"></i>
+                    Analizza Foto Ora
+                </button>
+            </div>
+
+            <!-- STATE 3: SCANNING / LOADING -->
+            <div id="loadingState" class="hidden text-center py-4">
+                <div class="relative w-56 h-56 mx-auto mb-6 rounded-2xl overflow-hidden border border-pink-500/50 shadow-2xl">
+                    <img id="scanningImg" src="" alt="In Scansione" class="w-full h-full object-cover filter brightness-90">
+                    <div class="absolute inset-0 face-mesh-overlay opacity-40"></div>
+                    <div class="scan-line"></div>
+                    
+                    <!-- Punti di tracciamento fittizi -->
+                    <div class="absolute top-1/3 left-1/3 w-2 h-2 bg-pink-500 rounded-full animate-ping"></div>
+                    <div class="absolute top-1/3 right-1/3 w-2 h-2 bg-pink-500 rounded-full animate-ping" style="animation-delay: 0.3s"></div>
+                    <div class="absolute bottom-1/3 left-1/2 -translate-x-1/2 w-2 h-2 bg-indigo-400 rounded-full animate-ping" style="animation-delay: 0.6s"></div>
+                </div>
+
+                <!-- Progress Bar -->
+                <div class="w-full bg-slate-800/80 rounded-full h-2 mb-4 overflow-hidden border border-slate-700">
+                    <div id="progressBar" class="bg-gradient-to-r from-pink-500 to-indigo-500 h-full w-0 transition-all duration-300 ease-out"></div>
+                </div>
+
+                <!-- Status Text -->
+                <div class="h-8 flex items-center justify-center">
+                    <p id="loadingStatus" class="text-sm font-medium text-pink-300 animate-pulse">
+                        Inizializzazione moduli biometrici...
+                    </p>
+                </div>
+            </div>
+
+            <!-- STATE 4: RESULT -->
+            <div id="resultState" class="hidden text-center">
+                <div class="relative w-36 h-36 mx-auto mb-6 rounded-full overflow-hidden border-4 shadow-2xl" id="resultBorder">
+                    <img id="resultImg" src="" alt="Risultato" class="w-full h-full object-cover">
+                </div>
+
+                <div class="mb-2">
+                    <span class="text-xs uppercase tracking-widest text-slate-400 font-semibold">Esito dell'Analisi</span>
+                </div>
+
+                <h2 id="resultTitle" class="text-3xl sm:text-4xl font-extrabold mb-4">
+                    <!-- Dinamico -->
+                </h2>
+
+                <div class="p-4 rounded-2xl bg-slate-900/60 border border-slate-800 mb-6 text-left space-y-3">
+                    <div class="flex items-start gap-3">
+                        <i id="resultIcon" class="text-xl mt-0.5"></i>
+                        <p id="resultDescription" class="text-sm text-slate-300 leading-relaxed">
+                            <!-- Dinamico -->
+                        </p>
+                    </div>
+                    
+                    <div class="border-t border-slate-800/80 pt-3 flex justify-between items-center text-xs text-slate-400">
+                        <span>Simmetria Facciale: <strong id="symmetryScore" class="text-slate-200">--</strong></span>
+                        <span>Indice Aureo: <strong id="goldenRatioScore" class="text-slate-200">--</strong></span>
+                    </div>
+                </div>
+
+                <button 
+                    id="retryBtn" 
+                    class="w-full py-3.5 px-6 bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold rounded-2xl border border-slate-700 transition-all duration-200 flex items-center justify-center gap-2"
+                >
+                    <i class="fa-solid fa-arrows-rotate"></i>
+                    Analizza un'altra foto
+                </button>
+            </div>
+
+        </div>
+
+        <!-- Footer Notice -->
+        <p class="text-center text-xs text-slate-500 mt-6">
+            <i class="fa-solid fa-triangle-exclamation mr-1"></i>
+            Disclaimer: Questa app ha scopi puramente goliardici e di intrattenimento.
+        </p>
+    </div>
+
+    <script>
+        // DOM Elements
+        const fileInput = document.getElementById('fileInput');
+        const dropZone = document.getElementById('dropZone');
+        
+        const uploadState = document.getElementById('uploadState');
+        const previewState = document.getElementById('previewState');
+        const loadingState = document.getElementById('loadingState');
+        const resultState = document.getElementById('resultState');
+
+        const previewImg = document.getElementById('previewImg');
+        const scanningImg = document.getElementById('scanningImg');
+        const resultImg = document.getElementById('resultImg');
+
+        const changeImgBtn = document.getElementById('changeImgBtn');
+        const analyzeBtn = document.getElementById('analyzeBtn');
+        const retryBtn = document.getElementById('retryBtn');
+
+        const progressBar = document.getElementById('progressBar');
+        const loadingStatus = document.getElementById('loadingStatus');
+
+        const resultTitle = document.getElementById('resultTitle');
+        const resultDescription = document.getElementById('resultDescription');
+        const resultBorder = document.getElementById('resultBorder');
+        const resultIcon = document.getElementById('resultIcon');
+        const symmetryScore = document.getElementById('symmetryScore');
+        const goldenRatioScore = document.getElementById('goldenRatioScore');
+
+        let currentImageSrc = '';
+
+        // Preset dei Risultati (Strictly Average or Ugly)
+        const possibleResults = [
+            {
+                type: 'NELLA MEDIA',
+                title: 'Nella Media 😐',
+                colorClass: 'text-amber-400',
+                borderClass: 'border-amber-500',
+                bgBadge: 'bg-amber-500/10',
+                icon: 'fa-regular fa-face-meh text-amber-400',
+                descriptions: [
+                    "Non fai girare la testa per strada, ma nemmeno scappare la gente! Un perfetto equilibrio di ordinaria normalità biometrica.",
+                    "La tua simmetria rientra esattamente nella campana di Gauss della popolazione mondiale. Insomma, passabile senza infamia e senza lode.",
+                    "L'algoritmo ha calcolato che sei esattamente il tipo di persona che non viene notata alla posta, ma che fa simpaticamente da sfondo nelle foto altrui."
+                ],
+                symmetry: () => (48 + Math.random() * 10).toFixed(1) + '%',
+                goldenRatio: () => (1.3 + Math.random() * 0.2).toFixed(2) + ' / 1.618'
+            },
+            {
+                type: 'BRUTTA',
+                title: 'Brutta... Ma Simpatica! 🙈',
+                colorClass: 'text-rose-500',
+                borderClass: 'border-rose-500',
+                bgBadge: 'bg-rose-500/10',
+                icon: 'fa-solid fa-face-frown-open text-rose-500',
+                descriptions: [
+                    "I nostri algoritmi si sono sforzati, ma la Sezione Aurea ha opposto una forte resistenza. Ti consigliamo una luce molto soffusa.",
+                    "Anomalia rilevata: la proporzione tra occhi, naso e bocca sembra aver seguito regole casuali. Ma ehi, la bellezza interiore è quella che conta davvero!",
+                    "Il sistema ha tentato di applicare i filtri di bellezza, ma sono andati in crash. Un look decisamente... 'unico' e inimitabile!"
+                ],
+                symmetry: () => (18 + Math.random() * 20).toFixed(1) + '%',
+                goldenRatio: () => (0.8 + Math.random() * 0.3).toFixed(2) + ' / 1.618'
+            }
+        ];
+
+        // Steps del caricamento fittizio
+        const loadingSteps = [
+            { time: 0, text: "Inizializzazione scansione 3D..." },
+            { time: 800, text: "Mappatura simmetria facciale..." },
+            { time: 1800, text: "Calcolo della proporzione aurea..." },
+            { time: 2800, text: "Confronto con database estetico..." },
+            { time: 3500, text: "Elaborazione verdetto finale..." }
+        ];
+
+        // Drag & Drop Handlers
+        dropZone.addEventListener('click', () => fileInput.click());
+
+        dropZone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            dropZone.classList.add('border-pink-500', 'bg-slate-900/80');
+        });
+
+        dropZone.addEventListener('dragleave', () => {
+            dropZone.classList.remove('border-pink-500', 'bg-slate-900/80');
+        });
+
+        dropZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropZone.classList.remove('border-pink-500', 'bg-slate-900/80');
+            if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+                handleFile(e.dataTransfer.files[0]);
+            }
+        });
+
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files && e.target.files[0]) {
+                handleFile(e.target.files[0]);
+            }
+        });
+
+        // Handle File Reading
+        function handleFile(file) {
+            if (!file.type.match('image/(png|jpeg)')) {
+                alert('Carica un file in formato PNG o JPG!');
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                currentImageSrc = e.target.result;
+                previewImg.src = currentImageSrc;
+                scanningImg.src = currentImageSrc;
+                resultImg.src = currentImageSrc;
+
+                // Show Preview State
+                switchState(previewState);
+            };
+            reader.readAsDataURL(file);
+        }
+
+        // Switch UI States
+        function switchState(targetState) {
+            [uploadState, previewState, loadingState, resultState].forEach(el => el.classList.add('hidden'));
+            targetState.classList.remove('hidden');
+        }
+
+        // Change Image
+        changeImgBtn.addEventListener('click', () => {
+            fileInput.value = '';
+            switchState(uploadState);
+        });
+
+        // Retry Button
+        retryBtn.addEventListener('click', () => {
+            fileInput.value = '';
+            switchState(uploadState);
+        });
+
+        // Start Analysis
+        analyzeBtn.addEventListener('click', () => {
+            switchState(loadingState);
+            progressBar.style.width = '0%';
+
+            const totalDuration = 3800; // ~3.8 secondi
+            const startTime = Date.now();
+
+            // Animate Progress Bar
+            const progressInterval = setInterval(() => {
+                const elapsed = Date.now() - startTime;
+                const progress = Math.min((elapsed / totalDuration) * 100, 100);
+                progressBar.style.width = `${progress}%`;
+
+                if (progress >= 100) {
+                    clearInterval(progressInterval);
+                }
+            }, 50);
+
+            // Update Loading Messages
+            loadingSteps.forEach(step => {
+                setTimeout(() => {
+                    loadingStatus.innerText = step.text;
+                }, step.time);
+            });
+
+            // Show Final Result
+            setTimeout(() => {
+                showResult();
+            }, totalDuration + 200);
+        });
+
+        // Generate Result
+        function showResult() {
+            // Pick randomly between Average (0) and Ugly (1)
+            const randomIndex = Math.floor(Math.random() * possibleResults.length);
+            const res = possibleResults[randomIndex];
+
+            const randomDesc = res.descriptions[Math.floor(Math.random() * res.descriptions.length)];
+
+            // Apply Classes & Text
+            resultTitle.innerText = res.title;
+            resultTitle.className = `text-3xl sm:text-4xl font-extrabold mb-4 ${res.colorClass}`;
+            
+            resultDescription.innerText = randomDesc;
+            
+            resultBorder.className = `relative w-36 h-36 mx-auto mb-6 rounded-full overflow-hidden border-4 shadow-2xl ${res.borderClass}`;
+            resultIcon.className = res.icon;
+
+            symmetryScore.innerText = res.symmetry();
+            goldenRatioScore.innerText = res.goldenRatio();
+
+            switchState(resultState);
+        }
+    </script>
+</body>
+</html>
