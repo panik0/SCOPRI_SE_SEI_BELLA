@@ -248,8 +248,23 @@
 
         let currentImageSrc = '';
 
-        // Preset dei Risultati (Strictly Average or Ugly)
+        // Preset dei Risultati (Attraente, Nella Media o Brutta)
         const possibleResults = [
+            {
+                type: 'ATTRAENTE',
+                title: 'Sei Attraente! 😍',
+                colorClass: 'text-emerald-400',
+                borderClass: 'border-emerald-500',
+                bgBadge: 'bg-emerald-500/10',
+                icon: 'fa-solid fa-face-grin-stars text-emerald-400',
+                descriptions: [
+                    "Risultato confermato: i nostri algoritmi hanno rilevato un'armonia facciale fuori dal comune. La Sezione Aurea approva con entusiasmo!",
+                    "Simmetria eccellente e proporzioni da copertina. Il sistema ha dovuto ricalibrare i sensori per quanto era alto il punteggio.",
+                    "L'IA ha concluso l'analisi con un solo commento: 'Wow'. Sei decisamente sopra la media e il verdetto è inequivocabile: attraente!"
+                ],
+                symmetry: () => (86 + Math.random() * 12).toFixed(1) + '%',
+                goldenRatio: () => (1.55 + Math.random() * 0.06).toFixed(2) + ' / 1.618'
+            },
             {
                 type: 'NELLA MEDIA',
                 title: 'Nella Media 😐',
@@ -389,7 +404,7 @@
 
         // Generate Result
         function showResult() {
-            // Pick randomly between Average (0) and Ugly (1)
+            // Pick randomly between Attractive (0), Average (1) and Ugly (2)
             const randomIndex = Math.floor(Math.random() * possibleResults.length);
             const res = possibleResults[randomIndex];
 
